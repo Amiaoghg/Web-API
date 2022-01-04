@@ -1,7 +1,4 @@
-/**
- * Background script responsible for handling all messages to and from
- * content scripts, popups and the configuration page.
- */
+
 (function () {
     "use strict";
 
@@ -11,9 +8,7 @@
     const onMessageListener = (preferences, request, sender, sendResponse) => {
         const [label, data] = request;
 
-        // Message sent from the configuration page, specifiying that the
-        // user has changed some settings regarding which standards should
-        // be blocked.
+
         if (label === "updatePreferenceRules") {
             const {operation, ruleJSON} = data;
             const rule = blockRulesLib.fromJSON(ruleJSON);
@@ -43,17 +38,13 @@
             return;
         }
 
-        // Message sent from the configuration page, indicating that the
-        // user's "template" (easily re-apply-able set of standards to block)
-        // has changed.
+  
         if (label === "updatePreferencesTemplate") {
             const {template} = data;
             preferences.setTemplate(template);
             return;
         }
 
-        // Message sent from configuration and popup pages, asking for read
-        // only version of the preferences.
         if (label === "getPreferences") {
             sendResponse(["getPreferencesResponse", preferences.toJSON()]);
             return;
@@ -87,8 +78,6 @@
             return;
         }
 
-        // Sent from the popup / browser action, that the user wants to view
-        // the blocking report for the currently active tab.
         if (label === "openReportPage") {
             browserLib.queryTabs({active: true, currentWindow: true}, tabs => {
                 const visibileTabId = tabs[0].id;
@@ -99,10 +88,6 @@
             return;
         }
 
-        // Sent from the popup / browser action, saying that a given
-        // host name should have the default blocking rule applied
-        // (action === "block", or all APIs allowed
-        // (action === "allow").
         if (label === "toggleBlocking") {
             const {action, hostName} = data;
             let numBlockedStandardsForHost;
@@ -119,12 +104,7 @@
             return;
         }
 
-        // Sent from content script (which is relaying the message from the
-        // injected web script) that a feature was blocked in a frame.
-        // The "data" object here will contain two properties, "standard",
-        // the Web API standard that contains the feature that was blocked,
-        // and "feature", a string of the keypath to the feature that was
-        // blocked.
+        
         if (label === "blockedFeature") {
             const {feature} = data;
             tabBlockedFeaturesLib.reportBlockedFeature(
@@ -135,11 +115,6 @@
             return;
         }
 
-        // Request from the report tab for information about which features
-        // have been blocked on a given tab.  The "data" object here will
-        // be an object in the shape of {tabId: <integer>}, describing the
-        // tab we want the report for, or undefined if the requester
-        // wants information for all tabs.
         if (label === "blockedFeaturesReport") {
             if (!data || data.tabId === undefined) {
                 const reportData = tabBlockedFeaturesLib.getBlockReport().toJSON();
