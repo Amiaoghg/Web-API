@@ -165,7 +165,7 @@ Version 6
                     etc...
                 ],
                 "f": array of key paths (strings) of features that should be
-                     blocked for standards that match this rule.
+                     blocked for standards that match this rule .
             },
             {
                 "p": ...
